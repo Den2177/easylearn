@@ -23,6 +23,7 @@ class MainController extends Controller
         $wordList = Dictionary::create([
             'name' => $fileName,
         ]);
+
         Excel::import(new WordsImport($wordList->id), $request->file('table'));
         return 'Success!';
     }

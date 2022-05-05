@@ -58,6 +58,7 @@
                             drop</h3>
                         <div class="load__area">
                             <div class="load__buttons">
+                                <span v-if="userFile" class="green">{{userFile.name}} Готов к загрузке на сервер!</span>
                                 <label>
                                     <input type="file" id="table" name="table" ref="file" class="hidden"
                                            @change="hundleUpload">
@@ -70,6 +71,19 @@
                         <a href="#" class="load__cancel" @click.prevent="disableModalVisible">X</a>
                     </div>
                 </div>
+                <Transition>
+                    <template v-if="notification">
+                        <div class="notification" :class="{'bc-green': notification.isSuccess, 'bc-red': !notification.isSuccess}">
+                            <div class="notification__icon">
+                                {{notification.isSuccess ? '✔' : 'X'}}
+                            </div>
+                            <div class="notification__content">
+                                {{notification.content}}
+                            </div>
+                        </div>
+                    </template>
+                </Transition>
+
             </div>
         </div>
     </main>
@@ -89,6 +103,7 @@ export default {
             counter: 0,
             isRusToEng: false,
             isTranslated: false,
+            notification: null,
         }
     },
     mounted() {
@@ -104,6 +119,22 @@ export default {
         hundleUpload() {
             this.userFile = this.$refs.file.files[0];
         },
+        updateProgressBarValue(value) {
+
+        },
+        throwNotification(mode) {
+          const notificationContent = {
+              'Success': 'Словарь успешно загружен!',
+              'Error': 'Что то пошло не так, попробуй загрузить другой файл',
+            };
+
+          this.notification = {
+              content: notificationContent[mode],
+              isSuccess: mode === 'Success',
+          };
+
+          setTimeout(() => this.notification = null, 5000);
+        },
         loadTable() {
             const formData = new FormData();
             formData.append('table', this.userFile);
@@ -111,10 +142,14 @@ export default {
             axios.post('api/main/file', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
             })
-                .then(res => console.log(res))
-                .catch(ex => console.log(ex));
+                .then(res => {
+                    if (res.data === 'Success!') this.throwNotification('Success');
+                })
+                .catch(ex => this.throwNotification('Error'));
+
+            this.isVisibleModal = false;
         },
         async getWordListNames() {
             axios.get('api/main/words')
@@ -152,19 +187,15 @@ export default {
                 let voices = window.speechSynthesis.getVoices();
                 console.log(voices);
                 const speaker = new SpeechSynthesisUtterance();
-                const russianVoice = voices.find(voice => voice.name === `Google ${mode === 'rus' ? 'русский' : 'US English'}`);
-                console.log(russianVoice);
+                const voice = voices.find(voice => voice.name === `Google ${mode === 'rus' ? 'русский' : 'US English'}`);
                 speaker.text = this.words[this.counter][`${mode}`];
-                speaker.voice = russianVoice;
-                speaker.lang = russianVoice.lang;
+                speaker.voice = voice;
+                speaker.lang = voice.lang;
                 speaker.volume = 100;
                 speechSynthesis.cancel();
                 speechSynthesis.speak(speaker);
             }, 50);
-
-
         }
-
     },
     computed: {
         lang() {
@@ -180,8 +211,6 @@ export default {
                 }
             }
         },
-
-
     }
 }
 </script>

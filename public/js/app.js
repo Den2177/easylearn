@@ -19673,7 +19673,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       words: null,
       counter: 0,
       isRusToEng: false,
-      isTranslated: false
+      isTranslated: false,
+      notification: null
     };
   },
   mounted: function mounted() {
@@ -19689,7 +19690,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     hundleUpload: function hundleUpload() {
       this.userFile = this.$refs.file.files[0];
     },
+    updateProgressBarValue: function updateProgressBarValue(value) {},
+    throwNotification: function throwNotification(mode) {
+      var _this = this;
+
+      var notificationContent = {
+        'Success': 'Словарь успешно загружен!',
+        'Error': 'Что то пошло не так, попробуй загрузить другой файл'
+      };
+      this.notification = {
+        content: notificationContent[mode],
+        isSuccess: mode === 'Success'
+      };
+      setTimeout(function () {
+        return _this.notification = null;
+      }, 5000);
+    },
     loadTable: function loadTable() {
+      var _this2 = this;
+
       var formData = new FormData();
       formData.append('table', this.userFile);
       axios.post('api/main/file', formData, {
@@ -19697,13 +19716,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (res) {
-        return console.log(res);
+        if (res.data === 'Success!') _this2.throwNotification('Success');
       })["catch"](function (ex) {
-        return console.log(ex);
+        return _this2.throwNotification('Error');
       });
+      this.isVisibleModal = false;
     },
     getWordListNames: function getWordListNames() {
-      var _this = this;
+      var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
@@ -19711,7 +19731,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 axios.get('api/main/words').then(function (res) {
-                  _this.wordListsNames = res.data;
+                  _this3.wordListsNames = res.data;
                 })["catch"](function (err) {
                   return console.log(err);
                 });
@@ -19725,12 +19745,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     downloadTable: function downloadTable() {
-      var _this2 = this;
+      var _this4 = this;
 
       axios.get('api/main/dictionary/' + this.currentDictionaryId).then(function (res) {
-        _this2.words = res.data;
+        _this4.words = res.data;
 
-        _this2.getDictionaryName();
+        _this4.getDictionaryName();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -19754,20 +19774,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return name;
     },
     convertTextToSpeech: function convertTextToSpeech(mode) {
-      var _this3 = this;
+      var _this5 = this;
 
       window.speechSynthesis.getVoices();
       setTimeout(function () {
         var voices = window.speechSynthesis.getVoices();
         console.log(voices);
         var speaker = new SpeechSynthesisUtterance();
-        var russianVoice = voices.find(function (voice) {
+        var voice = voices.find(function (voice) {
           return voice.name === "Google ".concat(mode === 'rus' ? 'русский' : 'US English');
         });
-        console.log(russianVoice);
-        speaker.text = _this3.words[_this3.counter]["".concat(mode)];
-        speaker.voice = russianVoice;
-        speaker.lang = russianVoice.lang;
+        speaker.text = _this5.words[_this5.counter]["".concat(mode)];
+        speaker.voice = voice;
+        speaker.lang = voice.lang;
         speaker.volume = 100;
         speechSynthesis.cancel();
         speechSynthesis.speak(speaker);
@@ -20009,13 +20028,23 @@ var _hoisted_28 = {
 var _hoisted_29 = {
   "class": "load__buttons"
 };
+var _hoisted_30 = {
+  key: 0,
+  "class": "green"
+};
 
-var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "btn btn_blue inline"
 }, "Найти словарь", -1
 /* HOISTED */
 );
 
+var _hoisted_32 = {
+  "class": "notification__icon"
+};
+var _hoisted_33 = {
+  "class": "notification__content"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("main", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang.from.toUpperCase()) + " -> " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang.to.toUpperCase()), 1
   /* TEXT */
@@ -20087,7 +20116,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, "Следующее слово →")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getDictionaryName()), 1
   /* TEXT */
-  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_24, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_24, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [$data.userFile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.userFile.name) + " Готов к загрузке на сервер!", 1
+  /* TEXT */
+  )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "file",
     id: "table",
     name: "table",
@@ -20098,7 +20129,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
-  ), _hoisted_30]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  ), _hoisted_31]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn_red",
     onClick: _cache[9] || (_cache[9] = function () {
       return $options.loadTable && $options.loadTable.apply($options, arguments);
@@ -20111,7 +20142,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }, ["prevent"]))
   }, "X")])], 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.isVisibleModal]])])])]);
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.isVisibleModal]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(vue__WEBPACK_IMPORTED_MODULE_0__.Transition, null, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [$data.notification ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 0,
+        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["notification", {
+          'bc-green': $data.notification.isSuccess,
+          'bc-red': !$data.notification.isSuccess
+        }])
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.isSuccess ? '✔' : 'X'), 1
+      /* TEXT */
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.content), 1
+      /* TEXT */
+      )], 2
+      /* CLASS */
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
+    }),
+    _: 1
+    /* STABLE */
+
+  })])])]);
 }
 
 /***/ }),

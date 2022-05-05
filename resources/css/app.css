@@ -217,11 +217,13 @@ option {
 
 .btn {
     cursor: pointer;
+    font-size: .9rem;
     padding: .7rem 2rem;
     border-radius: 20px;
     font-weight: 700;
     transition: transform .2s ease, box-shadow .2s ease;
 }
+
 
 .btn:hover {
     transform: translate(0,-3px);
@@ -468,6 +470,9 @@ td {
     color: #020711;
 
 }
+.green {
+    color: #32c753;
+}
 .search {
     display: flex;
     gap: 5px;
@@ -477,3 +482,52 @@ td {
     align-items: center;
     width: fit-content;
 }
+
+/*-------notification------------*/
+.notification {
+    color: #fff;
+    display: flex;
+    gap: 10px;
+    font-weight: 700;
+    padding: 30px;
+    border-radius: 20px;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    align-items: center;
+    transform: translate(-50%,0);
+}
+.notification__icon {
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    display: flex;
+    flex: 0 0 50px;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+.notification__icon > * {
+    display: inline;
+    height: fit-content;
+    width: fit-content;
+}
+
+.bc-green {
+    background-color: #4fe76d;
+
+}
+.bc-red {
+    background-color: #f14350;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: bottom 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    bottom: -100px;
+}
+
