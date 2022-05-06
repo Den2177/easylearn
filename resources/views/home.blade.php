@@ -9,14 +9,7 @@
     <title>Easy Learn</title>
 </head>
 <body>
-<div id="app">
-    <header class="header">
-        <div class="header__container container">
-            <div class="header__logo">
-                Easy Learn
-            </div>
-        </div>
-    </header>
+<div id="app" v-cloak>
     <Index></Index>
 </div>
 <script src="/public/js/app.js"></script>

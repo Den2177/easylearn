@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/main/file', [MainController::class, 'store']);
 Route::get('/main/words', [MainController::class, 'throwDictionaries']);
 Route::get('/words/dictionaries', [MainController::class, 'throwDictionariesAndWords']);
+Route::delete('/words/{dictionary}/delete', [MainController::class, 'deleteDictionary']);
+
 
 Route::get('/main/dictionary/{dictionary}', [MainController::class, 'throwWordsFromDictionary']);
 

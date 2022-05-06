@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="main__modal load" v-show="isVisibleModal">
-                    <div class="load__box">
+                    <div class="load__box" @drag="dragdrop" ref="draggable">
                         <h3 class="load__message">Загрузите свой Excel документ или перетащите с помощью drag'n
                             drop</h3>
                         <div class="load__area">
@@ -72,13 +72,13 @@
                     </div>
                 </div>
                 <Transition>
-                    <template v-if="notification">
-                        <div class="notification" :class="{'bc-green': notification.isSuccess, 'bc-red': !notification.isSuccess}">
+                    <template v-if="this.notifications.length">
+                        <div class="notification" :class="{'bc-green': this.notifications[this.notifications.length - 1].isSuccess, 'bc-red': !this.notifications[this.notifications.length - 1].isSuccess}">
                             <div class="notification__icon">
-                                {{notification.isSuccess ? '✔' : 'X'}}
+                                {{this.notifications[this.notifications.length - 1].isSuccess ? '✔' : 'X'}}
                             </div>
                             <div class="notification__content">
-                                {{notification.content}}
+                                {{this.notifications[this.notifications.length - 1].content}}
                             </div>
                         </div>
                     </template>
@@ -96,20 +96,38 @@ export default {
         return {
             isVisibleModal: false,
             userFile: null,
-            wordListsNames: null,
+            wordListsNames: [],
             currentDictionaryId: null,
             currentDictionary: null,
             words: null,
             counter: 0,
             isRusToEng: false,
             isTranslated: false,
-            notification: null,
+            notifications: [],
         }
     },
     mounted() {
         this.getWordListNames();
+        this.dragConfig();
     },
     methods: {
+        dragConfig() {
+            ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(item => {
+                this.$refs.draggable.addEventListener(item, (ev) => {
+                    if (item === 'dragstart' || item === 'dragenter' || item === 'dragover') {
+                        this.$refs.draggable.classList.add('animate');
+                    } else {
+                        this.$refs.draggable.classList.remove('animate');
+                    }
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    return false;
+                });
+            });
+            this.$refs['draggable'].addEventListener('drop', (e) => {
+                this.userFile = e.dataTransfer.files[0];
+            });
+        },
         showModalWindow() {
             this.isVisibleModal = true;
         },
@@ -119,21 +137,13 @@ export default {
         hundleUpload() {
             this.userFile = this.$refs.file.files[0];
         },
-        updateProgressBarValue(value) {
-
-        },
-        throwNotification(mode) {
-          const notificationContent = {
-              'Success': 'Словарь успешно загружен!',
-              'Error': 'Что то пошло не так, попробуй загрузить другой файл',
-            };
-
-          this.notification = {
-              content: notificationContent[mode],
+        throwNotification(content, mode) {
+          const notification = {
+              content: content,
               isSuccess: mode === 'Success',
           };
-
-          setTimeout(() => this.notification = null, 5000);
+          this.notifications.push(notification);
+          setTimeout(() => this.notifications.shift(), 3000);
         },
         loadTable() {
             const formData = new FormData();
@@ -145,9 +155,12 @@ export default {
                 },
             })
                 .then(res => {
-                    if (res.data === 'Success!') this.throwNotification('Success');
+                    if (res) {
+                        this.throwNotification('Словарь был успешно добавлен!', 'Success');
+                        this.wordListsNames.push(res.data);
+                    }
                 })
-                .catch(ex => this.throwNotification('Error'));
+                .catch(ex => this.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл'));
 
             this.isVisibleModal = false;
         },
@@ -195,7 +208,10 @@ export default {
                 speechSynthesis.cancel();
                 speechSynthesis.speak(speaker);
             }, 50);
-        }
+        },
+        dragdrop(ev) {
+            console.log(ev);
+        },
     },
     computed: {
         lang() {

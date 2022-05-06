@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('eng');
             $table->string('rus');
-            $table->foreignId('dictionary_id')->constrained();
+            $table->foreignId('dictionary_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

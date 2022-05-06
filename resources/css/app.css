@@ -9,7 +9,22 @@ a {
     text-decoration: none;
     color: inherit;
 }
+.link {
+    color: #96969b;
+    transition: color .2s ease;
 
+}
+.link:hover {
+    color: royalblue;
+}
+#app[v-cloak] {
+    display: none;
+}
+.header__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -30,7 +45,7 @@ body {
 }
 .input {
     padding: 10px;
-    border-radius: 20px;
+    border-radius: .75rem;
     border: none;
     outline: none;
     background-color: #f2f2fe;
@@ -247,7 +262,7 @@ option {
 .button {
     cursor: pointer;
     padding: .7rem 2rem;
-    border-radius: 20px;
+    border-radius: .75rem;
     font-weight: 700;
     transition: background-color .2s ease, color .2s ease;
 }
@@ -277,7 +292,7 @@ option {
     padding: 40px;
     box-shadow: 0 0 4px rgba(2, 7, 17, 0.05);
     background-color: #fff;
-    border-radius: 20px;
+    border-radius: .75rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -364,14 +379,20 @@ option {
 .load__box {
     background-color: #fff;
     padding: 40px;
-    border-radius: 20px;
+    border-radius: .75rem;
     position: relative;
+    border: 3px dashed #b9c6ef;
+    transition: border .2s ease;
+}
+.load__box.animate {
+    border: 2px dashed royalblue;
 }
 
 .load__message {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 30px;
+
 }
 
 .load__buttons {
@@ -450,11 +471,24 @@ table > h3 {
     flex-direction: column;
     gap: 20px;
 }
+.table-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 100%;
+}
+.button-wrap {
+    text-align: left;
+    margin-top: 10px;
+}
+tr:last-child td {
+    border: none;
+}
 table {
     border-spacing: 0px;
     padding: 30px;
     background-color: #fff;
-    border-radius: 20px;
+    border-radius: .75rem;
     box-shadow: 0 0 4px rgba(2, 7, 17, 0.11);
 }
 th {
@@ -477,7 +511,7 @@ td {
     display: flex;
     gap: 5px;
     box-shadow: 0 0 3px rgba(2, 7, 17, 0.07);
-    border-radius: 20px;
+    border-radius: 6px;
     margin-bottom: 20px;
     align-items: center;
     width: fit-content;
@@ -489,8 +523,8 @@ td {
     display: flex;
     gap: 10px;
     font-weight: 700;
-    padding: 30px;
-    border-radius: 20px;
+    padding:  15px 30px;
+    border-radius: 6px;
     position: fixed;
     bottom: 40px;
     left: 50%;

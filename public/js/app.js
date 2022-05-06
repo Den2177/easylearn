@@ -19667,20 +19667,41 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       isVisibleModal: false,
       userFile: null,
-      wordListsNames: null,
+      wordListsNames: [],
       currentDictionaryId: null,
       currentDictionary: null,
       words: null,
       counter: 0,
       isRusToEng: false,
       isTranslated: false,
-      notification: null
+      notifications: []
     };
   },
   mounted: function mounted() {
     this.getWordListNames();
+    this.dragConfig();
   },
   methods: {
+    dragConfig: function dragConfig() {
+      var _this = this;
+
+      ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (item) {
+        _this.$refs.draggable.addEventListener(item, function (ev) {
+          if (item === 'dragstart' || item === 'dragenter' || item === 'dragover') {
+            _this.$refs.draggable.classList.add('animate');
+          } else {
+            _this.$refs.draggable.classList.remove('animate');
+          }
+
+          ev.stopPropagation();
+          ev.preventDefault();
+          return false;
+        });
+      });
+      this.$refs['draggable'].addEventListener('drop', function (e) {
+        _this.userFile = e.dataTransfer.files[0];
+      });
+    },
     showModalWindow: function showModalWindow() {
       this.isVisibleModal = true;
     },
@@ -19690,24 +19711,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     hundleUpload: function hundleUpload() {
       this.userFile = this.$refs.file.files[0];
     },
-    updateProgressBarValue: function updateProgressBarValue(value) {},
-    throwNotification: function throwNotification(mode) {
-      var _this = this;
+    throwNotification: function throwNotification(content, mode) {
+      var _this2 = this;
 
-      var notificationContent = {
-        'Success': 'Словарь успешно загружен!',
-        'Error': 'Что то пошло не так, попробуй загрузить другой файл'
-      };
-      this.notification = {
-        content: notificationContent[mode],
+      var notification = {
+        content: content,
         isSuccess: mode === 'Success'
       };
+      this.notifications.push(notification);
       setTimeout(function () {
-        return _this.notification = null;
-      }, 5000);
+        return _this2.notifications.shift();
+      }, 3000);
     },
     loadTable: function loadTable() {
-      var _this2 = this;
+      var _this3 = this;
 
       var formData = new FormData();
       formData.append('table', this.userFile);
@@ -19716,14 +19733,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (res) {
-        if (res.data === 'Success!') _this2.throwNotification('Success');
+        if (res) {
+          _this3.throwNotification('Словарь был успешно добавлен!', 'Success');
+
+          _this3.wordListsNames.push(res.data);
+        }
       })["catch"](function (ex) {
-        return _this2.throwNotification('Error');
+        return _this3.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
       });
       this.isVisibleModal = false;
     },
     getWordListNames: function getWordListNames() {
-      var _this3 = this;
+      var _this4 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
@@ -19731,7 +19752,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 axios.get('api/main/words').then(function (res) {
-                  _this3.wordListsNames = res.data;
+                  _this4.wordListsNames = res.data;
                 })["catch"](function (err) {
                   return console.log(err);
                 });
@@ -19745,12 +19766,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     downloadTable: function downloadTable() {
-      var _this4 = this;
+      var _this5 = this;
 
       axios.get('api/main/dictionary/' + this.currentDictionaryId).then(function (res) {
-        _this4.words = res.data;
+        _this5.words = res.data;
 
-        _this4.getDictionaryName();
+        _this5.getDictionaryName();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -19774,7 +19795,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return name;
     },
     convertTextToSpeech: function convertTextToSpeech(mode) {
-      var _this5 = this;
+      var _this6 = this;
 
       window.speechSynthesis.getVoices();
       setTimeout(function () {
@@ -19784,13 +19805,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var voice = voices.find(function (voice) {
           return voice.name === "Google ".concat(mode === 'rus' ? 'русский' : 'US English');
         });
-        speaker.text = _this5.words[_this5.counter]["".concat(mode)];
+        speaker.text = _this6.words[_this6.counter]["".concat(mode)];
         speaker.voice = voice;
         speaker.lang = voice.lang;
         speaker.volume = 100;
         speechSynthesis.cancel();
         speechSynthesis.speak(speaker);
       }, 50);
+    },
+    dragdrop: function dragdrop(ev) {
+      console.log(ev);
     }
   },
   computed: {
@@ -19848,7 +19872,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       dictionaries: null,
-      userSearch: ''
+      userSearch: '',
+      notification: null
     };
   },
   mounted: function mounted() {
@@ -19860,7 +19885,6 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get('/api/words/dictionaries').then(function (res) {
         _this.dictionaries = res.data;
-        console.log(_this.dictionaries);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -19874,15 +19898,39 @@ __webpack_require__.r(__webpack_exports__);
 
       text = text.slice(0, pos) + '<mark>' + text.slice(pos, pos + this.userSearch.length) + '</mark>' + text.slice(pos + this.userSearch.length);
       return text;
+    },
+    deleteDict: function deleteDict(id) {
+      var _this2 = this;
+
+      axios["delete"]('/api/words/' + id + '/delete').then(function (res) {
+        _this2.throwNotification('Словарь был успешно удален', 'Success');
+
+        _this2.dictionaries = _this2.dictionaries.filter(function (item) {
+          return item.id !== id;
+        });
+      })["catch"](function (err) {
+        _this2.throwNotification('Не удалось удалить словарь');
+      });
+    },
+    throwNotification: function throwNotification(content, mode) {
+      var _this3 = this;
+
+      this.notification = {
+        content: content,
+        isSuccess: mode === 'Success'
+      };
+      setTimeout(function () {
+        return _this3.notification = null;
+      }, 5000);
     }
   },
   computed: {
     search: function search() {
-      var _this2 = this;
+      var _this4 = this;
 
       return this.dictionaries.filter(function (dict) {
         return dict.words.some(function (word) {
-          return word['eng'].toUpperCase().includes(_this2.userSearch.toUpperCase()) || word['rus'].toUpperCase().includes(_this2.userSearch.toUpperCase());
+          return word['eng'].toUpperCase().includes(_this4.userSearch.toUpperCase()) || word['rus'].toUpperCase().includes(_this4.userSearch.toUpperCase());
         });
       });
     }
@@ -20012,40 +20060,39 @@ var _hoisted_24 = {
 var _hoisted_25 = {
   "class": "main__modal load"
 };
-var _hoisted_26 = {
-  "class": "load__box"
-};
 
-var _hoisted_27 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+var _hoisted_26 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
   "class": "load__message"
 }, "Загрузите свой Excel документ или перетащите с помощью drag'n drop", -1
 /* HOISTED */
 );
 
-var _hoisted_28 = {
+var _hoisted_27 = {
   "class": "load__area"
 };
-var _hoisted_29 = {
+var _hoisted_28 = {
   "class": "load__buttons"
 };
-var _hoisted_30 = {
+var _hoisted_29 = {
   key: 0,
   "class": "green"
 };
 
-var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "btn btn_blue inline"
 }, "Найти словарь", -1
 /* HOISTED */
 );
 
-var _hoisted_32 = {
+var _hoisted_31 = {
   "class": "notification__icon"
 };
-var _hoisted_33 = {
+var _hoisted_32 = {
   "class": "notification__content"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _this = this;
+
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("main", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang.from.toUpperCase()) + " -> " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.lang.to.toUpperCase()), 1
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
@@ -20116,7 +20163,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, "Следующее слово →")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getDictionaryName()), 1
   /* TEXT */
-  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_24, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [$data.userFile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.userFile.name) + " Готов к загрузке на сервер!", 1
+  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_24, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "load__box",
+    onDrag: _cache[11] || (_cache[11] = function () {
+      return $options.dragdrop && $options.dragdrop.apply($options, arguments);
+    }),
+    ref: "draggable"
+  }, [_hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [$data.userFile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.userFile.name) + " Готов к загрузке на сервер!", 1
   /* TEXT */
   )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "file",
@@ -20129,7 +20182,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
-  ), _hoisted_31]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  ), _hoisted_30]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn_red",
     onClick: _cache[9] || (_cache[9] = function () {
       return $options.loadTable && $options.loadTable.apply($options, arguments);
@@ -20140,19 +20193,21 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.disableModalVisible && $options.disableModalVisible.apply($options, arguments);
     }, ["prevent"]))
-  }, "X")])], 512
+  }, "X")], 544
+  /* HYDRATE_EVENTS, NEED_PATCH */
+  )], 512
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.isVisibleModal]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(vue__WEBPACK_IMPORTED_MODULE_0__.Transition, null, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [$data.notification ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+      return [_this.notifications.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         key: 0,
         "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["notification", {
-          'bc-green': $data.notification.isSuccess,
-          'bc-red': !$data.notification.isSuccess
+          'bc-green': _this.notifications[_this.notifications.length - 1].isSuccess,
+          'bc-red': !_this.notifications[_this.notifications.length - 1].isSuccess
         }])
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.isSuccess ? '✔' : 'X'), 1
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].isSuccess ? '✔' : 'X'), 1
       /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.content), 1
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].content), 1
       /* TEXT */
       )], 2
       /* CLASS */
@@ -20237,6 +20292,21 @@ var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 
 var _hoisted_7 = ["innerHTML"];
 var _hoisted_8 = ["innerHTML"];
+var _hoisted_9 = ["onClick"];
+
+var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  "class": "btn btn_red"
+}, "Удалить словарь")], -1
+/* HOISTED */
+);
+
+var _hoisted_11 = [_hoisted_10];
+var _hoisted_12 = {
+  "class": "notification__icon"
+};
+var _hoisted_13 = {
+  "class": "notification__content"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
@@ -20262,10 +20332,36 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       , _hoisted_8)]);
     }), 256
     /* UNKEYED_FRAGMENT */
-    ))]);
+    )), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
+      "class": "button-wrap",
+      onClick: function onClick($event) {
+        return $options.deleteDict(table.id);
+      }
+    }, _hoisted_11, 8
+    /* PROPS */
+    , _hoisted_9)]);
   }), 256
   /* UNKEYED_FRAGMENT */
-  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]);
+  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(vue__WEBPACK_IMPORTED_MODULE_0__.Transition, null, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [$data.notification ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 0,
+        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["notification", {
+          'bc-green': $data.notification.isSuccess,
+          'bc-red': !$data.notification.isSuccess
+        }])
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.isSuccess ? '✔' : 'X'), 1
+      /* TEXT */
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.content), 1
+      /* TEXT */
+      )], 2
+      /* CLASS */
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
+    }),
+    _: 1
+    /* STABLE */
+
+  })])]);
 }
 
 /***/ }),
@@ -20283,10 +20379,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
+var _hoisted_1 = {
+  "class": "header"
+};
+var _hoisted_2 = {
+  "class": "header__container container"
+};
+
+var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "header__logo"
+}, " Easy Learn ", -1
+/* HOISTED */
+);
+
+var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Показать все словари");
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+
   var _component_router_view = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-view");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_view)]);
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("header", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    "class": "link",
+    to: {
+      name: 'words.index'
+    }
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [_hoisted_4];
+    }),
+    _: 1
+    /* STABLE */
+
+  }, 8
+  /* PROPS */
+  , ["to"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_view)]);
 }
 
 /***/ }),
@@ -20372,9 +20499,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var routes = [{
   path: '/',
+  name: 'main.index',
   component: _components_Main__WEBPACK_IMPORTED_MODULE_0__["default"]
 }, {
   path: '/words',
+  name: 'words.index',
   component: _components_Words__WEBPACK_IMPORTED_MODULE_2__["default"]
 }];
 var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createRouter)({

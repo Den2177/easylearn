@@ -6,10 +6,12 @@ import Words from "./components/Words";
 const routes = [
     {
         path: '/',
+        name: 'main.index',
         component: Main,
     },
     {
         path: '/words',
+        name: 'words.index',
         component: Words,
     },
 ];

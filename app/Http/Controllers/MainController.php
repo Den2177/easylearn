@@ -18,21 +18,31 @@ class MainController extends Controller
 
     public function store(Request $request)
     {
-        ini_set('memory_limit', '-1');
-        $fileName = preg_replace('/\..+/', '', $request->file('table')->getClientOriginalName());
-        $wordList = Dictionary::create([
-            'name' => $fileName,
-        ]);
+        try {
+            ini_set('memory_limit', '-1');
+            $fileName = preg_replace('/\..+/', '', $request->file('table')->getClientOriginalName());
+            $wordList = Dictionary::create([
+                'name' => $fileName,
+            ]);
+            Excel::import(new WordsImport($wordList->id), $request->file('table'));
+            return $wordList;
+        } catch(\Exception $ex) {
+            $wordList->delete();
+            return abort(500);
+        }
 
-        Excel::import(new WordsImport($wordList->id), $request->file('table'));
-        return 'Success!';
     }
 
     public function throwDictionaries()
     {
         $dictionaries = Dictionary::all();
-
         return $dictionaries;
+    }
+
+    public function deleteDictionary(Dictionary $dictionary)
+    {
+        $dictionary->delete();
+        return 'Success!';
     }
 
     public function throwDictionariesAndWords()
