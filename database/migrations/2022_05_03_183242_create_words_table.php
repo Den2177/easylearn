@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('eng');
             $table->string('rus');
+            $table->string('image')->nullable();
             $table->foreignId('dictionary_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

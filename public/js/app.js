@@ -19674,7 +19674,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       counter: 0,
       isRusToEng: false,
       isTranslated: false,
-      notifications: []
+      notifications: [],
+      userZip: null
     };
   },
   mounted: function mounted() {
@@ -19711,6 +19712,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     hundleUpload: function hundleUpload() {
       this.userFile = this.$refs.file.files[0];
     },
+    hundleUploadImage: function hundleUploadImage(ev) {
+      this.userZip = this.$refs.image.files[0];
+    },
     throwNotification: function throwNotification(content, mode) {
       var _this2 = this;
 
@@ -19728,18 +19732,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       var formData = new FormData();
       formData.append('table', this.userFile);
+
+      if (this.userZip) {
+        formData.append('images', this.userZip);
+      }
+
       axios.post('api/main/file', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (res) {
         if (res) {
+          console.log(res.data);
+
           _this3.throwNotification('Словарь был успешно добавлен!', 'Success');
 
           _this3.wordListsNames.push(res.data);
         }
       })["catch"](function (ex) {
-        return _this3.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
+        _this3.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
+
+        console.log(ex);
       });
       this.isVisibleModal = false;
     },
@@ -19770,6 +19783,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       axios.get('api/main/dictionary/' + this.currentDictionaryId).then(function (res) {
         _this5.words = res.data;
+        console.log(res.data);
 
         _this5.getDictionaryName();
       })["catch"](function (err) {
@@ -19831,7 +19845,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         };
       }
     }
-  }
+  },
+  watch: {}
 });
 
 /***/ }),
@@ -20020,74 +20035,85 @@ var _hoisted_13 = {
   "class": "window__content"
 };
 var _hoisted_14 = {
-  "class": "window__row"
+  key: 0,
+  "class": "window__image"
 };
-var _hoisted_15 = {
-  "class": "window__line"
-};
+var _hoisted_15 = ["src"];
 var _hoisted_16 = {
-  "class": "word"
+  "class": "window__row"
 };
 var _hoisted_17 = {
-  "class": "window__row"
-};
-var _hoisted_18 = {
   "class": "window__line"
 };
+var _hoisted_18 = {
+  "class": "word"
+};
 var _hoisted_19 = {
-  "class": "word questions"
+  "class": "window__row"
 };
 var _hoisted_20 = {
-  "class": "window__buttons"
+  "class": "window__line"
 };
 var _hoisted_21 = {
+  "class": "word questions"
+};
+var _hoisted_22 = {
+  "class": "window__buttons"
+};
+var _hoisted_23 = {
   "class": "window__info"
 };
 
-var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "bold"
 }, "Текущий словарь:", -1
 /* HOISTED */
 );
 
-var _hoisted_23 = {
+var _hoisted_25 = {
   "class": "light"
 };
-var _hoisted_24 = {
+var _hoisted_26 = {
   key: 1,
   "class": "_red"
 };
-var _hoisted_25 = {
+var _hoisted_27 = {
   "class": "main__modal load"
 };
 
-var _hoisted_26 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+var _hoisted_28 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
   "class": "load__message"
-}, "Загрузите свой Excel документ или перетащите с помощью drag'n drop", -1
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Загрузите свой Excel документ или перетащите с помощью drag'n drop "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("br"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Так же по желанию можете выгрузить zip архив с фотографиями (имена фотографий должны совпадать с английской версией слова)")], -1
 /* HOISTED */
 );
 
-var _hoisted_27 = {
+var _hoisted_29 = {
   "class": "load__area"
 };
-var _hoisted_28 = {
+var _hoisted_30 = {
   "class": "load__buttons"
 };
-var _hoisted_29 = {
+var _hoisted_31 = {
   key: 0,
   "class": "green"
 };
 
-var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_32 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "btn btn_blue inline"
 }, "Найти словарь", -1
 /* HOISTED */
 );
 
-var _hoisted_31 = {
+var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "btn btn_blue inline"
+}, "Найти zip архив", -1
+/* HOISTED */
+);
+
+var _hoisted_34 = {
   "class": "notification__icon"
 };
-var _hoisted_32 = {
+var _hoisted_35 = {
   "class": "notification__content"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -20131,15 +20157,20 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.isRusToEng]]), _hoisted_11])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [$data.words ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.isRusToEng]]), _hoisted_11])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [$data.words ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_13, [$data.words[$data.counter]['image'] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    src: $data.words[$data.counter]['image'],
+    alt: "image"
+  }, null, 8
+  /* PROPS */
+  , _hoisted_15)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
       return $options.convertTextToSpeech($options.lang.from);
     }, ["prevent"])),
     "class": "sound"
-  }, "🔊"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.words[$data.counter][$options.lang.from]), 1
+  }, "🔊"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.words[$data.counter][$options.lang.from]), 1
   /* TEXT */
-  )])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  )])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
       return $options.convertTextToSpeech($options.lang.to);
@@ -20149,9 +20180,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }])
   }, "🔊", 2
   /* CLASS */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isTranslated ? $data.words[$data.counter][$options.lang.to] : '???'), 1
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isTranslated ? $data.words[$data.counter][$options.lang.to] : '???'), 1
   /* TEXT */
-  )])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  )])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "button button_check",
     onClick: _cache[6] || (_cache[6] = function ($event) {
       return $data.isTranslated = true;
@@ -20161,15 +20192,15 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[7] || (_cache[7] = function () {
       return $options.incrementCounter && $options.incrementCounter.apply($options, arguments);
     })
-  }, "Следующее слово →")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getDictionaryName()), 1
+  }, "Следующее слово →")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getDictionaryName()), 1
   /* TEXT */
-  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_24, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  )])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_26, "Слов нет. Пожалуйста, выберите словарь который хотите использовать."))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "load__box",
-    onDrag: _cache[11] || (_cache[11] = function () {
+    onDrag: _cache[12] || (_cache[12] = function () {
       return $options.dragdrop && $options.dragdrop.apply($options, arguments);
     }),
     ref: "draggable"
-  }, [_hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [$data.userFile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.userFile.name) + " Готов к загрузке на сервер!", 1
+  }, [_hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [$data.userFile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.userFile.name) + " Готов к загрузке на сервер!", 1
   /* TEXT */
   )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "file",
@@ -20182,15 +20213,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
-  ), _hoisted_30]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  ), _hoisted_32]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "file",
+    id: "image",
+    name: "image",
+    ref: "image",
+    "class": "hidden",
+    onChange: _cache[9] || (_cache[9] = function () {
+      return $options.hundleUploadImage && $options.hundleUploadImage.apply($options, arguments);
+    })
+  }, null, 544
+  /* HYDRATE_EVENTS, NEED_PATCH */
+  ), _hoisted_33]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn_red",
-    onClick: _cache[9] || (_cache[9] = function () {
+    onClick: _cache[10] || (_cache[10] = function () {
       return $options.loadTable && $options.loadTable.apply($options, arguments);
     })
   }, "Загрузить словарь ")])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     "class": "load__cancel",
-    onClick: _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onClick: _cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.disableModalVisible && $options.disableModalVisible.apply($options, arguments);
     }, ["prevent"]))
   }, "X")], 544
@@ -20205,9 +20247,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           'bc-green': _this.notifications[_this.notifications.length - 1].isSuccess,
           'bc-red': !_this.notifications[_this.notifications.length - 1].isSuccess
         }])
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].isSuccess ? '✔' : 'X'), 1
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].isSuccess ? '✔' : 'X'), 1
       /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].content), 1
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_this.notifications[_this.notifications.length - 1].content), 1
       /* TEXT */
       )], 2
       /* CLASS */
@@ -20260,10 +20302,16 @@ var _hoisted_2 = {
   "class": "word-page"
 };
 var _hoisted_3 = {
+  "class": "prev"
+};
+
+var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Назад");
+
+var _hoisted_5 = {
   "class": "search"
 };
 
-var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
+var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
   "class": "icon",
   viewBox: "0 0 24 24",
   preserveAspectRatio: "xMidYMid meet",
@@ -20281,34 +20329,50 @@ var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 /* HOISTED */
 );
 
-var _hoisted_5 = {
+var _hoisted_7 = {
   key: 0,
   "class": "tables"
 };
 
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "ENG"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "RUS")], -1
+var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "ENG"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "RUS")], -1
 /* HOISTED */
 );
 
-var _hoisted_7 = ["innerHTML"];
-var _hoisted_8 = ["innerHTML"];
-var _hoisted_9 = ["onClick"];
+var _hoisted_9 = ["innerHTML"];
+var _hoisted_10 = ["innerHTML"];
+var _hoisted_11 = ["onClick"];
 
-var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   "class": "btn btn_red"
 }, "Удалить словарь")], -1
 /* HOISTED */
 );
 
-var _hoisted_11 = [_hoisted_10];
-var _hoisted_12 = {
+var _hoisted_13 = [_hoisted_12];
+var _hoisted_14 = {
   "class": "notification__icon"
 };
-var _hoisted_13 = {
+var _hoisted_15 = {
   "class": "notification__content"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    "class": "link",
+    to: {
+      name: 'main.index'
+    }
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [_hoisted_4];
+    }),
+    _: 1
+    /* STABLE */
+
+  }, 8
+  /* PROPS */
+  , ["to"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "input",
     placeholder: "Поиск...",
@@ -20317,19 +20381,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.userSearch]]), _hoisted_4]), $data.dictionaries ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.search, function (table) {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.userSearch]]), _hoisted_6]), $data.dictionaries ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_7, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.search, function (table) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("table", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(table.name), 1
     /* TEXT */
-    ), _hoisted_6, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(table.words, function (word) {
+    ), _hoisted_8, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(table.words, function (word) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
         innerHTML: $options.getDecoratedText(word.eng)
       }, null, 8
       /* PROPS */
-      , _hoisted_7), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+      , _hoisted_9), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
         innerHTML: $options.getDecoratedText(word.rus)
       }, null, 8
       /* PROPS */
-      , _hoisted_8)]);
+      , _hoisted_10)]);
     }), 256
     /* UNKEYED_FRAGMENT */
     )), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
@@ -20337,9 +20401,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.deleteDict(table.id);
       }
-    }, _hoisted_11, 8
+    }, _hoisted_13, 8
     /* PROPS */
-    , _hoisted_9)]);
+    , _hoisted_11)]);
   }), 256
   /* UNKEYED_FRAGMENT */
   ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(vue__WEBPACK_IMPORTED_MODULE_0__.Transition, null, {
@@ -20350,9 +20414,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           'bc-green': $data.notification.isSuccess,
           'bc-red': !$data.notification.isSuccess
         }])
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.isSuccess ? '✔' : 'X'), 1
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.isSuccess ? '✔' : 'X'), 1
       /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.content), 1
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.notification.content), 1
       /* TEXT */
       )], 2
       /* CLASS */

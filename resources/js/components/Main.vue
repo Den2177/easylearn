@@ -10,7 +10,6 @@
                                 <div class="select-helper" :class="{'hide': currentDictionaryId !== null}">Выбрать
                                     словарь:
                                 </div>
-
                                 <select v-model="currentDictionaryId" @change="downloadTable">
                                     <option v-for="item in wordListsNames" :value="item.id">{{ item.name }}</option>
                                 </select>
@@ -28,6 +27,9 @@
                 </div>
                 <div class="main__window window">
                     <div class="window__content" v-if="words">
+                        <div class="window__image" v-if="words[counter]['image']">
+                            <img :src="words[counter]['image']" alt="image">
+                        </div>
                         <div class="window__row">
                             <a href="#" @click.prevent="convertTextToSpeech(lang.from)" class="sound">🔊</a>
                             <div class="window__line">
@@ -55,7 +57,7 @@
                 <div class="main__modal load" v-show="isVisibleModal">
                     <div class="load__box" @drag="dragdrop" ref="draggable">
                         <h3 class="load__message">Загрузите свой Excel документ или перетащите с помощью drag'n
-                            drop</h3>
+                            drop <br> Так же по желанию можете выгрузить zip архив с фотографиями (имена фотографий должны совпадать с английской версией слова)</h3>
                         <div class="load__area">
                             <div class="load__buttons">
                                 <span v-if="userFile" class="green">{{userFile.name}} Готов к загрузке на сервер!</span>
@@ -64,6 +66,13 @@
                                            @change="hundleUpload">
                                     <div class="btn btn_blue inline">Найти словарь</div>
                                 </label>
+
+                                <label>
+                                    <input type="file" id="image" name="image" ref="image" class="hidden"
+                                           @change="hundleUploadImage">
+                                    <div class="btn btn_blue inline">Найти zip архив</div>
+                                </label>
+
                                 <button class="btn btn_red" @click="loadTable">Загрузить словарь
                                 </button>
                             </div>
@@ -83,7 +92,6 @@
                         </div>
                     </template>
                 </Transition>
-
             </div>
         </div>
     </main>
@@ -104,6 +112,7 @@ export default {
             isRusToEng: false,
             isTranslated: false,
             notifications: [],
+            userZip: null,
         }
     },
     mounted() {
@@ -137,17 +146,25 @@ export default {
         hundleUpload() {
             this.userFile = this.$refs.file.files[0];
         },
+        hundleUploadImage(ev) {
+            this.userZip = this.$refs.image.files[0];
+        },
         throwNotification(content, mode) {
           const notification = {
               content: content,
               isSuccess: mode === 'Success',
           };
+
           this.notifications.push(notification);
+
           setTimeout(() => this.notifications.shift(), 3000);
         },
         loadTable() {
             const formData = new FormData();
             formData.append('table', this.userFile);
+            if (this.userZip) {
+                formData.append('images', this.userZip);
+            }
 
             axios.post('api/main/file', formData, {
                 headers: {
@@ -156,11 +173,15 @@ export default {
             })
                 .then(res => {
                     if (res) {
+                        console.log(res.data);
                         this.throwNotification('Словарь был успешно добавлен!', 'Success');
                         this.wordListsNames.push(res.data);
                     }
                 })
-                .catch(ex => this.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл'));
+                .catch(ex => {
+                    this.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
+                    console.log(ex);
+                });
 
             this.isVisibleModal = false;
         },
@@ -175,6 +196,7 @@ export default {
             axios.get('api/main/dictionary/' + this.currentDictionaryId)
                 .then(res => {
                     this.words = res.data;
+                    console.log(res.data);
                     this.getDictionaryName();
                 })
                 .catch(err => console.log(err));
@@ -227,6 +249,9 @@ export default {
                 }
             }
         },
+    },
+    watch: {
+
     }
 }
 </script>

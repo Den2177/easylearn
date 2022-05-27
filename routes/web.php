@@ -15,5 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [MainController::class, 'index'])->where('{page}', '.*');
 Route::get('/main/dictionary/{dictionary}', [MainController::class, 'what']);
+Route::get('/main/dictionary/{dictionary}', [MainController::class, 'what']);
 
 Route::get('/{page}', [MainController::class, 'index'])->where('{page}', '.*');

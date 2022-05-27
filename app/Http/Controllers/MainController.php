@@ -8,6 +8,7 @@ use App\Models\Word;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use ZanySoft\Zip\Zip;
 
 class MainController extends Controller
 {
@@ -21,9 +22,21 @@ class MainController extends Controller
         try {
             ini_set('memory_limit', '-1');
             $fileName = preg_replace('/\..+/', '', $request->file('table')->getClientOriginalName());
+
             $wordList = Dictionary::create([
                 'name' => $fileName,
             ]);
+
+            if ($request->file('images')) {
+                $zip = new \ZipArchive();
+                $result = $zip->open($request->file('images'));
+
+                if ($result) {
+                    $res = $zip->extractTo($_SERVER['DOCUMENT_ROOT'] . '/storage/app/public/images');
+                    $zip->close();
+                }
+            }
+
             Excel::import(new WordsImport($wordList->id), $request->file('table'));
             return $wordList;
         } catch(\Exception $ex) {
@@ -48,6 +61,7 @@ class MainController extends Controller
     public function throwDictionariesAndWords()
     {
         $dictionaries = Dictionary::all();
+
         foreach ($dictionaries as $dictionary) {
             $dictionary['words'] = $dictionary->words;
         }

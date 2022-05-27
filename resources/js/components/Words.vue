@@ -1,6 +1,8 @@
 <template>
     <div class="container">
         <div class="word-page">
+            <div class="prev">
+                <router-link class="link" :to="{name: 'main.index'}">Назад</router-link></div>
             <div class="search">
                 <input type="text" class="input" placeholder="Поиск..." v-model="userSearch">
                 <svg class="icon" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" role="none"

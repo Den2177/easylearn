@@ -9,7 +9,6 @@ class Word extends Model
 {
     protected $guarded = false;
     use HasFactory;
-
     public function dictionary()
     {
         return $this->belongsTo(Dictionary::class);

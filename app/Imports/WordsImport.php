@@ -22,13 +22,20 @@ class WordsImport implements ToCollection, WithHeadingRow
     {
         foreach ($collection as $item) {
             if (isset($item['eng']) && $item['eng'] !== null) {
+                $image = null;
+                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/storage/app/public/images/' . $item['eng'] . ('.png'))) {
+                    $image = '/storage/app/public/images/' . $item['eng'] . '.png';
+                }
+
                 Word::firstOrCreate(
                     [
                         'eng' => $item['eng'],
                         'rus' => $item['rus'],
+                        'image' => $image,
                         'dictionary_id' => $this->id,
-                    ]
+                    ],
                 );
+
             }
         }
     }
