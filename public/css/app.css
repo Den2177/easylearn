@@ -586,7 +586,6 @@ td {
     border-radius: 6px;
     margin-bottom: 20px;
     align-items: center;
-    width: -webkit-fit-content;
     width: -moz-fit-content;
     width: fit-content;
 }
@@ -614,15 +613,6 @@ td {
     justify-content: center;
     align-items: center;
     color: #fff;
-}
-.notification__icon > * {
-    display: inline;
-    height: -webkit-fit-content;
-    height: -moz-fit-content;
-    height: fit-content;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
 }
 
 .bc-green {
