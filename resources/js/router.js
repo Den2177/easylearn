@@ -1,6 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Main from "./components/Main";
-import Test from "./components/Test";
 import Words from "./components/Words";
 
 const routes = [

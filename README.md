@@ -1,6 +1,6 @@
-## how to download app
+## how to download this app
 
-1. git clones
+1. git clone
 2. cd folder
 3. composer install
 4. npm install

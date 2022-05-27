@@ -25,19 +25,35 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="main__window window">
                     <div class="window__content" v-if="words">
                         <div class="window__image" v-if="words[counter]['image']">
                             <img :src="words[counter]['image']" alt="image">
                         </div>
                         <div class="window__row">
-                            <a href="#" @click.prevent="convertTextToSpeech(lang.from)" class="sound">🔊</a>
+                            <a href="#" @click.prevent="convertTextToSpeech(lang.from)" class="sound">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     height="30"
+                                     width="30"
+                                     viewBox="0 0 456.373 456.373">
+	                                <path stroke-width="3" stroke="#000" d="M397.83,1.156c-5.665-2.349-12.192-1.05-16.532,3.288L277.3,108.442H168.923c-65.884,0-119.745,53.598-119.745,119.745    c0,66.028,53.717,119.745,119.745,119.745H277.3L381.298,451.93c4.345,4.346,10.874,5.633,16.532,3.288    c5.669-2.348,9.365-7.879,9.365-14.015V15.171C407.195,9.035,403.5,3.503,397.83,1.156z M138.883,312.393    c-34.565-12.367-59.365-45.443-59.365-84.206c0-38.764,24.8-71.839,59.365-84.207V312.393z M268.413,317.59h-99.189V138.782    h99.189V317.59z M376.855,404.578l-78.101-78.101V129.896l78.101-78.101V404.578z"/>
+                                </svg>
+                            </a>
                             <div class="window__line">
                                 <div class="word">{{ words[counter][lang.from] }}</div>
                             </div>
                         </div>
                         <div class="window__row">
-                            <a href="#" @click.prevent="convertTextToSpeech(lang.to)" class="sound" :class="{hide: !isTranslated}">🔊</a>
+                            <a href="#" @click.prevent="convertTextToSpeech(lang.to)" class="sound"
+                               :class="{hide: !isTranslated}">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     height="30"
+                                     width="30"
+                                     viewBox="0 0 456.373 456.373">
+                                    <path stroke-width="3" stroke="#000" d="M397.83,1.156c-5.665-2.349-12.192-1.05-16.532,3.288L277.3,108.442H168.923c-65.884,0-119.745,53.598-119.745,119.745    c0,66.028,53.717,119.745,119.745,119.745H277.3L381.298,451.93c4.345,4.346,10.874,5.633,16.532,3.288    c5.669-2.348,9.365-7.879,9.365-14.015V15.171C407.195,9.035,403.5,3.503,397.83,1.156z M138.883,312.393    c-34.565-12.367-59.365-45.443-59.365-84.206c0-38.764,24.8-71.839,59.365-84.207V312.393z M268.413,317.59h-99.189V138.782    h99.189V317.59z M376.855,404.578l-78.101-78.101V129.896l78.101-78.101V404.578z"/>
+                                </svg>
+                            </a>
                             <div class="window__line">
                                 <div class="word questions">{{ isTranslated ? words[counter][lang.to] : '???' }}</div>
                             </div>
@@ -54,13 +70,15 @@
                     <div v-else class="_red">Слов нет. Пожалуйста, выберите словарь который хотите использовать.</div>
                 </div>
 
-                <div class="main__modal load" v-show="isVisibleModal">
-                    <div class="load__box" @drag="dragdrop" ref="draggable">
+                <div class="main__modal load" v-show="isVisibleModal" @click="disableModalVisible">
+                    <div class="load__box" @drag="dragdrop" ref="draggable" @click.stop>
                         <h3 class="load__message">Загрузите свой Excel документ или перетащите с помощью drag'n
-                            drop <br> Так же по желанию можете выгрузить zip архив с фотографиями (имена фотографий должны совпадать с английской версией слова)</h3>
+                            drop <br> Так же по желанию можете выгрузить zip архив с фотографиями (имена фотографий
+                            должны совпадать с английской версией слова)</h3>
                         <div class="load__area">
                             <div class="load__buttons">
-                                <span v-if="userFile" class="green">{{userFile.name}} Готов к загрузке на сервер!</span>
+                                <span v-if="userFile"
+                                      class="green">{{ userFile.name }} Готов к загрузке на сервер!</span>
                                 <label>
                                     <input type="file" id="table" name="table" ref="file" class="hidden"
                                            @change="hundleUpload">
@@ -70,7 +88,7 @@
                                 <label>
                                     <input type="file" id="image" name="image" ref="image" class="hidden"
                                            @change="hundleUploadImage">
-                                    <div class="btn btn_blue inline">Найти zip архив</div>
+                                    <div class="btn btn_blue inline">Найти zip архив (необязательно)</div>
                                 </label>
 
                                 <button class="btn btn_red" @click="loadTable">Загрузить словарь
@@ -82,12 +100,13 @@
                 </div>
                 <Transition>
                     <template v-if="this.notifications.length">
-                        <div class="notification" :class="{'bc-green': this.notifications[this.notifications.length - 1].isSuccess, 'bc-red': !this.notifications[this.notifications.length - 1].isSuccess}">
+                        <div class="notification"
+                             :class="{'bc-green': this.notifications[this.notifications.length - 1].isSuccess, 'bc-red': !this.notifications[this.notifications.length - 1].isSuccess}">
                             <div class="notification__icon">
-                                {{this.notifications[this.notifications.length - 1].isSuccess ? '✔' : 'X'}}
+                                {{ this.notifications[this.notifications.length - 1].isSuccess ? '✔' : 'X' }}
                             </div>
                             <div class="notification__content">
-                                {{this.notifications[this.notifications.length - 1].content}}
+                                {{ this.notifications[this.notifications.length - 1].content }}
                             </div>
                         </div>
                     </template>
@@ -100,6 +119,8 @@
 <script>
 export default {
     name: "Main",
+    components: {},
+
     data() {
         return {
             isVisibleModal: false,
@@ -146,18 +167,18 @@ export default {
         hundleUpload() {
             this.userFile = this.$refs.file.files[0];
         },
-        hundleUploadImage(ev) {
+        hundleUploadImage() {
             this.userZip = this.$refs.image.files[0];
         },
         throwNotification(content, mode) {
-          const notification = {
-              content: content,
-              isSuccess: mode === 'Success',
-          };
+            const notification = {
+                content: content,
+                isSuccess: mode === 'Success',
+            };
 
-          this.notifications.push(notification);
+            this.notifications.push(notification);
 
-          setTimeout(() => this.notifications.shift(), 3000);
+            setTimeout(() => this.notifications.shift(), 3000);
         },
         loadTable() {
             const formData = new FormData();
@@ -173,14 +194,12 @@ export default {
             })
                 .then(res => {
                     if (res) {
-                        console.log(res.data);
                         this.throwNotification('Словарь был успешно добавлен!', 'Success');
                         this.wordListsNames.push(res.data);
                     }
                 })
                 .catch(ex => {
                     this.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
-                    console.log(ex);
                 });
 
             this.isVisibleModal = false;
@@ -196,7 +215,6 @@ export default {
             axios.get('api/main/dictionary/' + this.currentDictionaryId)
                 .then(res => {
                     this.words = res.data;
-                    console.log(res.data);
                     this.getDictionaryName();
                 })
                 .catch(err => console.log(err));
@@ -212,8 +230,8 @@ export default {
         },
         getDictionaryName() {
             const select = document.querySelector('.choice-word-list select');
-            let name = [...select.children].find(item => item.selected).innerText;
-            return name;
+
+            return [...select.children].find(item => item.selected).innerText;
         },
         convertTextToSpeech(mode) {
             window.speechSynthesis.getVoices();
@@ -231,28 +249,12 @@ export default {
                 speechSynthesis.speak(speaker);
             }, 50);
         },
-        dragdrop(ev) {
-            console.log(ev);
-        },
     },
     computed: {
         lang() {
-            if (this.isRusToEng) {
-                return {
-                    from: 'rus',
-                    to: 'eng',
-                }
-            } else {
-                return {
-                    from: 'eng',
-                    to: 'rus',
-                }
-            }
+            return this.isRusToEng ? {from: 'rus', to: 'eng'} : {from: 'eng', to: 'rus'};
         },
     },
-    watch: {
-
-    }
 }
 </script>
 

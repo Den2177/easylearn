@@ -643,4 +643,15 @@ td {
     bottom: -100px;
 }
 
+/*------------sound svg icons styles------------- */
+
+.sound svg {
+    fill: #77777a;
+    transition: fill .2s ease;
+}
+.sound svg:hover {
+    fill: #4149e1;
+}
+
+
 
