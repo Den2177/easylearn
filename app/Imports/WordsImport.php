@@ -21,10 +21,16 @@ class WordsImport implements ToCollection, WithHeadingRow
     public function collection(Collection $collection)
     {
         foreach ($collection as $item) {
+
             if (isset($item['eng']) && $item['eng'] !== null) {
                 $image = null;
+
                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/storage/app/public/images/' . $item['eng'] . ('.png'))) {
                     $image = '/storage/app/public/images/' . $item['eng'] . '.png';
+                }
+
+                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/storage/app/public/images/' . $item['eng'] . ('.jpg'))) {
+                    $image = '/storage/app/public/images/' . $item['eng'] . '.jpg';
                 }
 
                 Word::firstOrCreate(
@@ -35,7 +41,6 @@ class WordsImport implements ToCollection, WithHeadingRow
                         'dictionary_id' => $this->id,
                     ],
                 );
-
             }
         }
     }

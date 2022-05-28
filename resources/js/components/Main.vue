@@ -79,6 +79,8 @@
                             <div class="load__buttons">
                                 <span v-if="userFile"
                                       class="green">{{ userFile.name }} Готов к загрузке на сервер!</span>
+                                <span v-if="userZip"
+                                      class="green">{{ userZip.name }} Готов к загрузке на сервер!</span>
                                 <label>
                                     <input type="file" id="table" name="table" ref="file" class="hidden"
                                            @change="hundleUpload">
@@ -183,6 +185,7 @@ export default {
         loadTable() {
             const formData = new FormData();
             formData.append('table', this.userFile);
+
             if (this.userZip) {
                 formData.append('images', this.userZip);
             }
@@ -199,6 +202,8 @@ export default {
                     }
                 })
                 .catch(ex => {
+                    console.log(ex);
+
                     this.throwNotification('Не удалось загрузить словарь. Попробуйте другой файл');
                 });
 

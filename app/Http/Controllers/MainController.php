@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\CsvWordsImport;
 use App\Imports\WordsImport;
 use App\Models\Dictionary;
 use App\Models\Word;
@@ -21,8 +22,9 @@ class MainController extends Controller
     {
         try {
             ini_set('memory_limit', '-1');
-            $fileName = preg_replace('/\..+/', '', $request->file('table')->getClientOriginalName());
-
+            $fileOriginalName = $request->file('table')->getClientOriginalName();
+            $fileName = preg_replace('/\..+/', '', $fileOriginalName);
+            $fileType = preg_replace('/.+\./', '', $fileOriginalName);
             $wordList = Dictionary::create([
                 'name' => $fileName,
             ]);
@@ -35,15 +37,21 @@ class MainController extends Controller
                     $res = $zip->extractTo($_SERVER['DOCUMENT_ROOT'] . '/storage/app/public/images');
                     $zip->close();
                 }
+
             }
 
-            Excel::import(new WordsImport($wordList->id), $request->file('table'));
+            if ($fileType === 'csv') {
+                Excel::import(new CsvWordsImport($wordList->id), $request->file('table'), null, \Maatwebsite\Excel\Excel::CSV);
+            } else {
+                Excel::import(new WordsImport($wordList->id), $request->file('table'));
+            }
+
             return $wordList;
-        } catch(\Exception $ex) {
+
+        } catch (\Exception $ex) {
             $wordList->delete();
             return abort(500);
         }
-
     }
 
     public function throwDictionaries()
@@ -72,13 +80,6 @@ class MainController extends Controller
     public function throwWordsFromDictionary(Dictionary $dictionary)
     {
         $words = $dictionary->words;
-        return $words;
-    }
-
-    public function what(Dictionary $dictionary)
-    {
-        $words = $dictionary->words;
-        dd($words);
         return $words;
     }
 }

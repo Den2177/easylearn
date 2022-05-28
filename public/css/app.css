@@ -94,7 +94,7 @@ option {
     color: #fff;
     display: block;
     z-index: 1;
-   }
+}
 .main__top {
     padding: 50px 0;
 }
@@ -149,36 +149,36 @@ option {
 
 #checkbox:checked + .switcher__label {
     -webkit-animation: enable .5s;
-            animation: enable .5s;
+    animation: enable .5s;
     background: #7d9dff;
 }
 
 #checkbox:checked + .switcher__label .switcher__left {
     -webkit-animation: scale .5s;
-            animation: scale .5s;
+    animation: scale .5s;
     transform: translate(-50%, -50%) scale(0);
 }
 
 #checkbox:checked + .switcher__label .switcher__right {
     -webkit-animation: appear .6s;
-            animation: appear .6s;
+    animation: appear .6s;
 }
 
 #checkbox:not(:checked) + .switcher__label {
     -webkit-animation: disable .5s;
-            animation: disable .5s;
+    animation: disable .5s;
     background: royalblue;
 }
 
 #checkbox:not(:checked) + .switcher__label .switcher__right {
     -webkit-animation: scale .5s;
-            animation: scale .5s;
+    animation: scale .5s;
     transform: translate(-50%, -50%) scale(0);
 }
 
 #checkbox:not(:checked) + .switcher__label .switcher__left {
     -webkit-animation: appear .6s;
-            animation: appear .6s;
+    animation: appear .6s;
 }
 
 .dec {
@@ -355,7 +355,7 @@ option {
     width: 100%;
     height: 100%;
     -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
 }
 
 .window__buttons {
@@ -642,6 +642,4 @@ td {
 .sound svg:hover {
     fill: #4149e1;
 }
-
-
 
