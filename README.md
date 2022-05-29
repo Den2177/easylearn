@@ -3,12 +3,12 @@
 
 ### 1. clone repository
 ```
-git clone https://github.com/Den2177/easylearn
+git clone https://github.com/Den2177/easylearn.git
 ```
-### 2. go to the project folder
+### 2. go to the project folder where easylearn - your path
 
 ```
-cd folder
+cd easylearn
 ```
 ### 3. composer installing
 ```
