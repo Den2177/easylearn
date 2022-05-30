@@ -14,25 +14,19 @@ cd easylearn
 ```
 composer install
 ```
-### 4. npm installing
-```
-npm install
-```
 
-### 5. Copy .env.example file to .env
-### 6. put db data in env
-### 7. generate key for app
+### 4. Copy .env.example file to .env
+### 5. put db data in env
+### 6. generate key for app
 ```
 php artisan key:generate
 ```
-### 8. make migration
+### 7. make migration
 ```
 php artisan migrate
 ```
-### 9. start the server and use
+### 8. start the server and use
 ```
 php artisan serve
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
